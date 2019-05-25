@@ -86,6 +86,7 @@ public class Ftp_by_apache {
 		try {
 			BufferedReader dataInput = new BufferedReader(new InputStreamReader(dataSocket.getInputStream(), "UTF-8"));
 			while ((line = dataInput.readLine()) != null) {
+				System.out.println(line);
 				String[] sArray = line.split("\\s+", 0);//如果Windows文件夹名含有空格会出现问题
 				MyFtpFile file = new MyFtpFile();
 				//文件名
@@ -97,7 +98,7 @@ public class Ftp_by_apache {
 					file.setType(false);
 				}
 				//文件大小
-				file.setSize(Integer.parseInt(sArray[4]));
+				file.setSize(Long.parseLong(sArray[4]));
 				files.add(file);
 			}
 			dataSocket.close();
@@ -214,7 +215,7 @@ class MyFtpFile{
 	//目录true，文件false
 	private boolean type;
 	private String name;
-	private int size;
+	private long size;
 	
 	public boolean getType() {
 		return type;
@@ -228,10 +229,10 @@ class MyFtpFile{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 	
