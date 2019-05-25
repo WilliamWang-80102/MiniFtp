@@ -2,7 +2,6 @@ package cn.edu.whu.wzw.ftp;
 
 import java.net.*;
 import java.io.*;
-import java.util.*;
 /*
  * 基于filezilla的ftp服务器实现的ftp客户端
  */
@@ -351,22 +350,4 @@ public class Ftp {
 	}
 }
 
-// 读取控制流的CtrlListen 类
-class CtrlListen implements Runnable {
-	BufferedReader ctrlInput = null;
 
-	public CtrlListen(BufferedReader in) {
-		ctrlInput = in;
-	}
-
-	public void run() {
-		while (true) {
-			try {
-				// 按行读入并输出到标准输出上
-				System.out.println(ctrlInput.readLine());
-			} catch (Exception e) {
-				System.exit(1);
-			}
-		}
-	}
-}

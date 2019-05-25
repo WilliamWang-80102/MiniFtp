@@ -3,28 +3,17 @@ package cn.edu.whu.wzw.ftp;
 import java.awt.EventQueue;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import javax.swing.border.BevelBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.filechooser.FileSystemView;
 
-import org.apache.commons.net.ftp.FTPFile;
-
-import java.awt.ScrollPane;
-import java.awt.Label;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Vector;
-import java.awt.Scrollbar;
 
 public class Frame_Main implements ActionListener{
 
@@ -53,10 +42,10 @@ public class Frame_Main implements ActionListener{
      * Launch the application.
      */
     public static void main(String[] args) {
-    	ftp=new MyFtp(FTP,username,password);
     	
         EventQueue.invokeLater(new Runnable() {
-            public void run() {
+            @Override
+			public void run() {
                 try {
                     Frame_Main window = new Frame_Main();
                     window.frame.setVisible(true);
@@ -100,15 +89,15 @@ public class Frame_Main implements ActionListener{
         lblNewLabel_2.setBounds(32, 40, 70, 15);
         frame.getContentPane().add(lblNewLabel_2);
 
-        JTextField url = new JTextField("127.0.0.1");   //FTP服务地址
+        JTextField url = new JTextField(FTP);   //FTP服务地址
         url.setBounds(110,8,82,15);
         frame.getContentPane().add(url);
 
-        JTextField usernameField = new JTextField("admin"); //用户名
+        JTextField usernameField = new JTextField(username); //用户名
         usernameField.setBounds(110,25,82,15);
         frame.getContentPane().add(usernameField);
 
-        JPasswordField passwordField = new JPasswordField("000000");  //密码
+        JPasswordField passwordField = new JPasswordField(password);  //密码
         passwordField.setBounds(110,40,82,15);
         frame.getContentPane().add(passwordField);
 
@@ -131,10 +120,10 @@ public class Frame_Main implements ActionListener{
                     ftp = new MyFtp(FTP, username, password);
                     file=ftp.getAllFile();
                     setTableInfo();//显示所有文件信息
-
-                    url.setEditable(false);
-                    usernameField.setEditable(false);
-                    passwordField.setEditable(false);
+                    System.out.println("登陆成功！");
+//                    url.setEditable(false);
+//                    usernameField.setEditable(false);
+//                    passwordField.setEditable(false);
                 } catch (Exception e1) {
                     e1.printStackTrace();
                     JOptionPane.showConfirmDialog(null, "用户名或者密码错误\n username："+username, "ERROR_MESSAGE",JOptionPane.ERROR_MESSAGE);
@@ -150,7 +139,8 @@ public class Frame_Main implements ActionListener{
         upload.setBounds(312, 45, 82, 23);
         frame.getContentPane().add(upload);
         upload.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            @Override
+			public void actionPerformed(ActionEvent arg0) {
                 //上传点击按钮触发------------------------------------
                 System.out.println("上传！！！！！");
                 int result = 0;
@@ -162,16 +152,17 @@ public class Frame_Main implements ActionListener{
                 fileChooser.setCurrentDirectory(fsv.getHomeDirectory());
                 fileChooser.setDialogTitle("请选择要上传的文件...");
                 fileChooser.setApproveButtonText("确定");
-                fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+                fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 result = fileChooser.showOpenDialog(null);
                 if (JFileChooser.APPROVE_OPTION == result) {
                     path=fileChooser.getSelectedFile().getPath();
                     System.out.println("path: "+path);
                     try {
-                        //下载
-                        ftp.upload(path);
-                        System.out.println("文件上传成功");
-                    } catch (Exception e1) {
+
+                        File file3 =new File(path);
+                        ftp.upload(file3);
+                        System.out.println("上传成功！");
+                    } catch (IOException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
                     }
@@ -187,7 +178,8 @@ public class Frame_Main implements ActionListener{
         //刷新按钮--------------------------------------------------
         JButton refresh = new JButton("刷新");
         refresh.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            @Override
+			public void actionPerformed(ActionEvent arg0) {
                 try{
                     file=ftp.getAllFile();
                     setTableInfo();

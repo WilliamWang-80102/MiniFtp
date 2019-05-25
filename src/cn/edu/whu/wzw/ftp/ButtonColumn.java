@@ -14,9 +14,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.TableCellEditor;  
 import javax.swing.table.TableCellRenderer;  
-import javax.swing.table.TableColumnModel;  
-
-import org.apache.commons.net.ftp.FTPFile;
+import javax.swing.table.TableColumnModel;
   
 public class ButtonColumn extends AbstractCellEditor implements  
         TableCellRenderer, TableCellEditor, ActionListener {  
@@ -38,7 +36,8 @@ public class ButtonColumn extends AbstractCellEditor implements
         columnModel.getColumn(column).setCellEditor(this);  
     }  
   
-    public Component getTableCellRendererComponent(JTable table, Object value,  
+    @Override
+	public Component getTableCellRendererComponent(JTable table, Object value,  
             boolean isSelected, boolean hasFocus, int row, int column) {  
         if (hasFocus) {  
             renderButton.setForeground(table.getForeground());  
@@ -55,18 +54,21 @@ public class ButtonColumn extends AbstractCellEditor implements
         return renderButton;  
     }  
   
-    public Component getTableCellEditorComponent(JTable table, Object value,  
+    @Override
+	public Component getTableCellEditorComponent(JTable table, Object value,  
             boolean isSelected, int row, int column) {  
         text = (value == null) ? " " : value.toString();  
         editButton.setText(text);  
         return editButton;  
     }  
   
-    public Object getCellEditorValue() {  
+    @Override
+	public Object getCellEditorValue() {  
         return text;  
     }  
   
-    public void actionPerformed(ActionEvent e) {  
+    @Override
+	public void actionPerformed(ActionEvent e) {  
         fireEditingStopped();  
 //        System.out.println(e.getActionCommand() + "   :    "  
 //                + table.getSelectedRow()); 
@@ -97,10 +99,7 @@ public class ButtonColumn extends AbstractCellEditor implements
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
-            finally{
-                
-                Frame_Main.getFtp().close_connection();
-            }
+            
         } 
     }  
 

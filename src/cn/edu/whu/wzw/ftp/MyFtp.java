@@ -3,21 +3,16 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
-
-import javax.imageio.stream.FileImageInputStream;
 
 
 public class MyFtp {
@@ -115,29 +110,6 @@ public class MyFtp {
         
     }
     
-    
-    //生成InputStream用于上传本地文件  
-    public void upload(String File_path) throws IOException{
-//        InputStream input=null;
-//        String[] File_name = null;
-//        try {
-//            input = new FileInputStream(File_path);
-//            File_name=File_path.split("\\\\");
-//            System.out.println(File_name[File_name.length-1]);
-//        } catch (FileNotFoundException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        
-//         //上传文件  
-//        System.out.println(File_name[File_name.length-1]);
-//        f.storeFile(File_name[File_name.length-1], input);
-//        System.out.println("上传成功!");
-//        
-//        if(input!=null)
-//        input.close();
-    }
-    
     // dataConnection方法
  	// 构造与服务器交换数据用的Socket
  	// 再用PORT命令将端口通知服务器
@@ -220,6 +192,65 @@ public class MyFtp {
     		System.exit(1);
     	}
     }
+	
+	public void upload(File file) throws IOException
+    {
+    	//如果上传的是文件夹
+    	if(file.isDirectory()) 
+    	{
+    		//保存文件夹名
+    		String fileName = file.getName();
+    		try 
+    		{
+    			ctrlOutput.println("MKD "+fileName);
+        		ctrlOutput.flush();
+    		} 
+    		catch (Exception e) 
+    		{
+    			e.printStackTrace();
+    			System.exit(1);
+    		}	
+    		ctrlOutput.println("CWD "+fileName);
+    		ctrlOutput.flush();
+    		
+    		String[] files = file.list(); 
+    		for (int i = 0; i < files.length; i++) 
+            {    
+                File file1 = new File(file.getPath()+"\\"+files[i] );    
+                upload(file1);  
+            }
+    		ctrlOutput.println("CDUP ");
+    		ctrlOutput.flush();
+    	}
+    	else 
+    	{
+    		try {
+    			int n;
+    			byte[] buff = new byte[1024];
+    			FileInputStream sendfile = null;
+    			// 指定文件名
+    			try {
+    				sendfile = new FileInputStream(file.getPath());
+    			} catch (Exception e) {
+    				System.out.println("文件不存在");
+    				return;
+    			}
+    			String lonfile = file.getName();
+    			// 准备发送数据的流
+    			Socket dataSocket = dataConnection("STOR " + lonfile);
+    			OutputStream outstr = dataSocket.getOutputStream();
+    			while ((n = sendfile.read(buff)) > 0) {
+    				outstr.write(buff, 0, n);
+    			}
+
+    			dataSocket.close();
+    			sendfile.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			System.exit(1);
+    		}
+    	}
+    }
     
 	// getMsgs方法
 	// 启动从控制流收信的线程
@@ -235,6 +266,27 @@ public class MyFtp {
 	}
 
 }
+
+//读取控制流的CtrlListen 类
+class CtrlListen implements Runnable {
+	BufferedReader ctrlInput = null;
+
+	public CtrlListen(BufferedReader in) {
+		ctrlInput = in;
+	}
+
+	public void run() {
+		while (true) {
+			try {
+				// 按行读入并输出到标准输出上
+				System.out.println(ctrlInput.readLine());
+			} catch (Exception e) {
+				System.exit(1);
+			}
+		}
+	}
+}
+
 
 class MyFtpFile{
 	//目录true，文件false
