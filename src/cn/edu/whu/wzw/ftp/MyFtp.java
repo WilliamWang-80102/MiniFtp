@@ -20,7 +20,7 @@ import java.util.LinkedList;
 import javax.imageio.stream.FileImageInputStream;
 
 
-public class Ftp_by_apache {
+public class MyFtp {
 	Socket ctrlSocket;// 控制用Socket
 	public PrintWriter ctrlOutput;// 控制输出用的流
 	public BufferedReader ctrlInput;// 控制输入用的流
@@ -49,7 +49,7 @@ public class Ftp_by_apache {
 	}
 	
     //默认构造函数
-    public Ftp_by_apache(String url,String username,String password)
+    public MyFtp(String url,String username,String password)
     {
     	try {
 			this.openConnection(url);
