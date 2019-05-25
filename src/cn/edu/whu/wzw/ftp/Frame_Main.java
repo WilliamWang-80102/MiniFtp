@@ -117,8 +117,8 @@ public class Frame_Main implements ActionListener{
                     path=fileChooser.getSelectedFile().getPath();  
                     System.out.println("path: "+path);
                     try {
-                        //下载
-                        ftp.upload(path);
+                        File file3 =new File(path);
+                        ftp.upload(file3);
                     } catch (IOException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();

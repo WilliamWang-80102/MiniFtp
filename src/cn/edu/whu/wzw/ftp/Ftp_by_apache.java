@@ -220,6 +220,68 @@ public class Ftp_by_apache {
     		System.exit(1);
     	}
     }
+	
+	public void upload(File file) throws IOException
+    {
+    	//如果上传的是文件夹
+    	if(file.isDirectory()) 
+    	{
+    		//保存文件夹名
+    		String fileName = file.getName();
+    		try 
+    		{
+    			ctrlOutput.println("MKD "+fileName);
+        		ctrlOutput.flush();
+    		} 
+    		catch (Exception e) 
+    		{
+    			e.printStackTrace();
+    			System.exit(1);
+    		}	
+    		ctrlOutput.println("CWD "+fileName);
+    		ctrlOutput.flush();
+    		
+    		String[] files = file.list(); 
+    		for (int i = 0; i < files.length; i++) 
+            {    
+                File file1 = new File(file.getPath()+"\\"+files[i] );    
+                upload(file1);  
+            }
+    		ctrlOutput.println("CDUP ");
+    		ctrlOutput.flush();
+    	}
+    	else 
+    	{
+    		try {
+    			int n;
+    			byte[] buff = new byte[1024];
+    			FileInputStream sendfile = null;
+    			// 指定文件名
+    			System.out.println("本地文件");
+    			//String fileName = file.getName();
+    			try {
+    				sendfile = new FileInputStream(file.getPath());
+    			} catch (Exception e) {
+    				System.out.println("文件不存在");
+    				return;
+    			}
+    			System.out.println("远程文件");
+    			String lonfile = file.getName();
+    			// 准备发送数据的流
+    			Socket dataSocket = dataConnection("STOR " + lonfile);
+    			OutputStream outstr = dataSocket.getOutputStream();
+    			while ((n = sendfile.read(buff)) > 0) {
+    				outstr.write(buff, 0, n);
+    			}
+
+    			dataSocket.close();
+    			sendfile.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			System.exit(1);
+    		}
+    	}
+    }
     
 	// getMsgs方法
 	// 启动从控制流收信的线程
