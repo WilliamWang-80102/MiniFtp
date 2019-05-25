@@ -53,6 +53,7 @@ public class Ftp_by_apache {
     {
     	try {
 			this.openConnection(url);
+			this.getMsgs(); // 启动接收线程
 			this.doLogin(username, password);
 		} catch (UnknownHostException e) {
 			// TODO 自动生成的 catch 块
@@ -86,6 +87,7 @@ public class Ftp_by_apache {
 		try {
 			BufferedReader dataInput = new BufferedReader(new InputStreamReader(dataSocket.getInputStream(), "UTF-8"));
 			while ((line = dataInput.readLine()) != null) {
+				//System.out.println(line);
 				String[] sArray = line.split("\\s+", 0);//如果Windows文件夹名含有空格会出现问题
 				MyFtpFile file = new MyFtpFile();
 				//文件名
@@ -201,20 +203,44 @@ public class Ftp_by_apache {
     	//对文件夹递归处理  
     	File dir = new File(to_path + from_file_name);
     	if(dir.mkdir()) {
+    		//更新当前目录
+    		ctrlOutput.println("CWD " + from_file_name);
+    		ctrlOutput.flush();
     		//获取远程文件夹内的所有文件信息
+    		MyFtpFile[] files = getAllFile();
+    		for (MyFtpFile file : files) {
+				this.download(file.getType(), file.getName(), dir.getPath() + File.separatorChar);
+			}
+    		//返回上级目录
+    		ctrlOutput.println("CDUP ");
+    		ctrlOutput.flush();
     		
     	}else {
     		System.err.println("mkdir error when download directory！");
     		System.exit(1);
     	}
     }
+    
+	// getMsgs方法
+	// 启动从控制流收信的线程
+	public void getMsgs() {
+		try {
+			CtrlListen listener = new CtrlListen(ctrlInput);
+			Thread listenerthread = new Thread(listener);
+			listenerthread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+
 }
 
 class MyFtpFile{
 	//目录true，文件false
 	private boolean type;
 	private String name;
-	private int size;
+	private long size;
 	
 	public boolean getType() {
 		return type;
@@ -228,10 +254,10 @@ class MyFtpFile{
 	public void setName(String name) {
 		this.name = name;
 	}
-	public int getSize() {
+	public long getSize() {
 		return size;
 	}
-	public void setSize(int size) {
+	public void setSize(long size) {
 		this.size = size;
 	}
 	
