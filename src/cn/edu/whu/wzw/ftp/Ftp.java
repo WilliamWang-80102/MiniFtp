@@ -92,7 +92,8 @@ public class Ftp {
 		try {
 			System.out.println("请输入目录名");
 			dirName = lineread.readLine();
-			String cmd = new String(("CWD " + dirName).getBytes("gbk"), "utf-8");
+			String cmd = new String(("CWD " + dirName).getBytes("gbk"),"gbk");
+			System.out.println(cmd);
 			ctrlOutput.println(cmd);// CWD命令
 			ctrlOutput.flush();
 		} catch (Exception e) {
@@ -113,9 +114,9 @@ public class Ftp {
 
 			// 准备读取数据用的流
 			//BufferedInputStream dataInput = new BufferedInputStream(dataSocket.getInputStream());
-			InputStreamReader dataInput = new InputStreamReader(dataSocket.getInputStream(),"GBK");
+			InputStreamReader dataInput = new InputStreamReader(dataSocket.getInputStream(),"UTF-8");
 			// 读取目录信息
-
+			
 			//while ((n = dataInput.read(buff)) > 0) {
 			//	System.out.write(buff, 0, n);
 			//}
@@ -138,7 +139,8 @@ public class Ftp {
 		Socket dataSocket = null;// 传送数据用Socket
 		try {
 			// 得到自己的地址
-			byte[] address = InetAddress.getLocalHost().getAddress();
+			//byte[] address = InetAddress.getLocalHost().getAddress();
+			byte[] address = {127,0,0,1};
 			// 用适当的端口号构造服务器
 			serverDataSocket = new ServerSocket(0, 1);
 			/*
@@ -156,7 +158,8 @@ public class Ftp {
 			ctrlOutput.flush();
 			// 向服务器发送处理对象命令(LIST,RETR,及STOR)
 			//ctrlOutput.println(ctrlcmd);
-			ctrlcmd = new String(ctrlcmd.getBytes("gbk"),"utf-8");
+			ctrlcmd = new String(ctrlcmd);
+			//System.out.println("文件控制指令为：" + ctrlcmd);
 			ctrlOutput.println(ctrlcmd);
 			ctrlOutput.flush();
 
@@ -207,6 +210,7 @@ public class Ftp {
 			// 指定服务器上的文件名
 			System.out.println("远程文件名");
 			fileName = lineread.readLine();
+			System.out.println("输入的远程文件名：" + fileName);
 			// 在客户端上准备接收用的文件
 			System.out.println("本地文件");
 			loafile = lineread.readLine();
@@ -245,7 +249,6 @@ public class Ftp {
 			// BufferedInputStream dataInput = new BufferedInputStream(new
 			// FileInputStream(fileName));
 			try {
-
 				sendfile = new FileInputStream(fileName);
 			} catch (Exception e) {
 				System.out.println("文件不存在");
@@ -333,11 +336,10 @@ public class Ftp {
 	// main方法
 	// 建立TCP连接，开始处理
 	public static void main(String[] arg) {
-
 		try {
 			Ftp f = null;
 			f = new Ftp();
-			f.openConnection("10.132.91.226"); // 控制连接建立,设置为自己的IP.
+			f.openConnection("127.0.0.1"); // 控制连接建立,设置为自己的IP.
 			f.getMsgs(); // 启动接收线程
 			f.main_proc(); // ftp 处理
 			f.closeConnection(); // 关闭连接
