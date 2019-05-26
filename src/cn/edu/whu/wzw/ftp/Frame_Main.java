@@ -21,8 +21,8 @@ public class Frame_Main implements ActionListener{
     //初始化参数--------------------------------
     static MyFtpFile[] file;
     static String FTP="127.0.0.1";
-    static String username="wzw";
-    static String password="";
+    static String username="test";
+    static String password="test";
     //初始化参数--------------------------------
 
 
@@ -69,8 +69,11 @@ public class Frame_Main implements ActionListener{
      */
     private void initialize() {
         frame = new JFrame();
+
         //frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Frame_Main.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
-        frame.setTitle("FTP Client");
+
+//        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Frame_Main.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
+        frame.setTitle("FTP");
         frame.setBounds(100, 100, 470, 534);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
