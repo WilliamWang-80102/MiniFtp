@@ -42,7 +42,7 @@ public class Frame_Main implements ActionListener{
      * Launch the application.
      */
     public static void main(String[] args) {
-    	
+//    	Frame_Main window = new Frame_Main();
         EventQueue.invokeLater(new Runnable() {
             @Override
 			public void run() {
@@ -69,7 +69,7 @@ public class Frame_Main implements ActionListener{
      */
     private void initialize() {
         frame = new JFrame();
-        frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Frame_Main.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
+        //frame.setIconImage(Toolkit.getDefaultToolkit().getImage(Frame_Main.class.getResource("/com/sun/java/swing/plaf/windows/icons/UpFolder.gif")));
         frame.setTitle("FTP Client");
         frame.setBounds(100, 100, 470, 534);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -118,8 +118,9 @@ public class Frame_Main implements ActionListener{
                     username=usernameField.getText().trim();
                     password=passwordField.getText().trim();
                     ftp = new MyFtp(FTP, username, password);
+                    //显示所有文件信息
                     file=ftp.getAllFile();
-                    setTableInfo();//显示所有文件信息
+                    setTableInfo();
                     System.out.println("登陆成功！");
 //                    url.setEditable(false);
 //                    usernameField.setEditable(false);
@@ -144,7 +145,6 @@ public class Frame_Main implements ActionListener{
                 //上传点击按钮触发------------------------------------
                 System.out.println("上传！！！！！");
                 int result = 0;
-                File file = null;
                 String path = null;
                 JFileChooser fileChooser = new JFileChooser();
                 FileSystemView fsv = FileSystemView.getFileSystemView();
@@ -165,6 +165,15 @@ public class Frame_Main implements ActionListener{
                     } catch (IOException e1) {
                         // TODO Auto-generated catch block
                         e1.printStackTrace();
+                    }
+                    //刷新列表
+                    try{
+                        file=ftp.getAllFile();
+                        setTableInfo();
+                    }
+                    catch (Exception e)
+                    {
+                        e.printStackTrace();
                     }
                 }
                 //上传点击按钮触发------------------------------------
@@ -196,7 +205,6 @@ public class Frame_Main implements ActionListener{
         frame.getContentPane().add(refresh);
         //刷新按钮--------------------------------------------------
 
-
     }
 
     //显示基本信息-----------------------------------------------
@@ -219,8 +227,6 @@ public class Frame_Main implements ActionListener{
             data1[row][2]=file[row].getSize()+"";
             data1[row][3]="下载";
         }
-
-
 
         //table列名-----------------------------------------------------
         String[] columnNames = {"文件", "文件类型", "文件大小(B)", ""  };
@@ -245,6 +251,7 @@ public class Frame_Main implements ActionListener{
 
         //table button初始化(最后一列的按键)--------------------
         ButtonColumn buttonsColumn = new ButtonColumn(table, 3);
+        
     }
 
     @Override

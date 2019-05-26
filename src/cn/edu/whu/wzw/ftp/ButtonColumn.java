@@ -11,7 +11,6 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTable;  
 import javax.swing.UIManager;  
-import javax.swing.filechooser.FileSystemView;
 import javax.swing.table.TableCellEditor;  
 import javax.swing.table.TableCellRenderer;  
 import javax.swing.table.TableColumnModel;
@@ -70,22 +69,14 @@ public class ButtonColumn extends AbstractCellEditor implements
     @Override
 	public void actionPerformed(ActionEvent e) {  
         fireEditingStopped();  
-//        System.out.println(e.getActionCommand() + "   :    "  
-//                + table.getSelectedRow()); 
         MyFtpFile[]  file1=Frame_Main.getFtp().getAllFile();
         String from_file_name=file1[table.getSelectedRow()].getName();
         boolean from_file_type=file1[table.getSelectedRow()].getType();
         int result = 0;  
-        File file = null;  
         String path = null;  
         JFileChooser fileChooser = new JFileChooser();  
-        FileSystemView fsv = FileSystemView.getFileSystemView();
-        fsv.createFileObject(from_file_name);
-        //System.out.println(fsv.getHomeDirectory());  
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        //fileChooser.setCurrentDirectory(new File(from_file_name));  
         fileChooser.setDialogTitle("另存为:");  
-        //fileChooser.setApproveButtonText("保存");   
         result = fileChooser.showSaveDialog(null);
         if (JFileChooser.APPROVE_OPTION == result) {  
             path=fileChooser.getSelectedFile().getPath()+"\\"; //加"\\"是为了防止在桌面的时候C:destop最后没有\ 
@@ -96,7 +87,6 @@ public class ButtonColumn extends AbstractCellEditor implements
                 System.out.println("下载成功! ");
 
             } catch (IOException e1) {
-                // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
             

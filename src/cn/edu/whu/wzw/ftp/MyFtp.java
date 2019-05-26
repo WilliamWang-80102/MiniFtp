@@ -106,8 +106,7 @@ public class MyFtp {
 			e.printStackTrace();
 		}
 		MyFtpFile[] filesRef = new MyFtpFile[files.size()];
-        return files.toArray(filesRef);
-        
+        return files.toArray(filesRef);  
     }
     
     // dataConnection方法
