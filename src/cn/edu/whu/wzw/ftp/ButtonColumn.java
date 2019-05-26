@@ -73,6 +73,7 @@ public class ButtonColumn extends AbstractCellEditor implements
         MyFtpFile[]  file1=Frame_Main.getFtp().getAllFile();
         String from_file_name=file1[table.getSelectedRow()].getName();
         boolean from_file_type=file1[table.getSelectedRow()].getType();
+        long fileSize=file1[table.getSelectedRow()].getSize();
         int result = 0;  
         File file = null;  
         String path = null;  
@@ -90,7 +91,7 @@ public class ButtonColumn extends AbstractCellEditor implements
             System.out.println("path: "+path);
             System.out.println("from_file_name:"+from_file_name);
             try {
-                Frame_Main.getFtp().download(from_file_type,from_file_name, path);
+                Frame_Main.getFtp().download(from_file_type,from_file_name, path,fileSize);
                 System.out.println("下载成功! ");
 
             } catch (IOException e1) {
