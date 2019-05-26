@@ -1,14 +1,27 @@
 package cn.edu.whu.wzw.ftp;
+<<<<<<< HEAD:src/cn/edu/whu/wzw/ftp/Ftp_by_apache.java
 
 import java.io.*;
 import java.net.InetAddress;
+=======
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+>>>>>>> 1074cf4d328425c38e243ac74e4b207dfec26356:src/cn/edu/whu/wzw/ftp/MyFtp.java
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
 
-import javax.imageio.stream.FileImageInputStream;
 
+<<<<<<< HEAD:src/cn/edu/whu/wzw/ftp/Ftp_by_apache.java
 
 public class Ftp_by_apache {
     Socket ctrlSocket;// 控制用Socket
@@ -51,6 +64,50 @@ public class Ftp_by_apache {
             // TODO 自动生成的 catch 块
             e.printStackTrace();
         }
+=======
+public class MyFtp {
+	Socket ctrlSocket;// 控制用Socket
+	public PrintWriter ctrlOutput;// 控制输出用的流
+	public BufferedReader ctrlInput;// 控制输入用的流
+	final int CTRLPORT = 21;// ftp 的控制用端口
+	ServerSocket serverDataSocket;
+    
+	// openConnection方法
+	// 由地址和端口号构造Socket，形成控制用的流
+	public void openConnection(String host) throws IOException, UnknownHostException {
+		ctrlSocket = new Socket(host, CTRLPORT);
+		ctrlOutput = new PrintWriter(ctrlSocket.getOutputStream());
+		ctrlInput = new BufferedReader(new InputStreamReader(ctrlSocket.getInputStream()));
+	}
+	
+	public void doLogin(String loginName,String password) {
+		try {
+			ctrlOutput.println("USER " + loginName);
+			ctrlOutput.flush();
+			ctrlOutput.println("PASS " + password);
+			ctrlOutput.flush();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("doLogin异常！");
+			System.exit(1);
+		}
+	}
+	
+    //默认构造函数
+    public MyFtp(String url,String username,String password)
+    {
+    	try {
+			this.openConnection(url);
+			this.getMsgs(); // 启动接收线程
+			this.doLogin(username, password);
+		} catch (UnknownHostException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO 自动生成的 catch 块
+			e.printStackTrace();
+		}
+>>>>>>> 1074cf4d328425c38e243ac74e4b207dfec26356:src/cn/edu/whu/wzw/ftp/MyFtp.java
     }
 
 
@@ -103,6 +160,7 @@ public class Ftp_by_apache {
         return files.toArray(filesRef);
 
     }
+<<<<<<< HEAD:src/cn/edu/whu/wzw/ftp/Ftp_by_apache.java
 
 
     //生成InputStream用于上传本地文件  
@@ -127,6 +185,9 @@ public class Ftp_by_apache {
 //        input.close();
     }
 
+=======
+    
+>>>>>>> 1074cf4d328425c38e243ac74e4b207dfec26356:src/cn/edu/whu/wzw/ftp/MyFtp.java
     // dataConnection方法
     // 构造与服务器交换数据用的Socket
     // 再用PORT命令将端口通知服务器
@@ -230,6 +291,81 @@ public class Ftp_by_apache {
 //            System.exit(1);
 //        }
     }
+<<<<<<< HEAD:src/cn/edu/whu/wzw/ftp/Ftp_by_apache.java
+=======
+	
+	public void upload(File file) throws IOException
+    {
+    	//如果上传的是文件夹
+    	if(file.isDirectory()) 
+    	{
+    		//保存文件夹名
+    		String fileName = file.getName();
+    		try 
+    		{
+    			ctrlOutput.println("MKD "+fileName);
+        		ctrlOutput.flush();
+    		} 
+    		catch (Exception e) 
+    		{
+    			e.printStackTrace();
+    			System.exit(1);
+    		}	
+    		ctrlOutput.println("CWD "+fileName);
+    		ctrlOutput.flush();
+    		
+    		String[] files = file.list(); 
+    		for (int i = 0; i < files.length; i++) 
+            {    
+                File file1 = new File(file.getPath()+"\\"+files[i] );    
+                upload(file1);  
+            }
+    		ctrlOutput.println("CDUP ");
+    		ctrlOutput.flush();
+    	}
+    	else 
+    	{
+    		try {
+    			int n;
+    			byte[] buff = new byte[1024];
+    			FileInputStream sendfile = null;
+    			// 指定文件名
+    			try {
+    				sendfile = new FileInputStream(file.getPath());
+    			} catch (Exception e) {
+    				System.out.println("文件不存在");
+    				return;
+    			}
+    			String lonfile = file.getName();
+    			// 准备发送数据的流
+    			Socket dataSocket = dataConnection("STOR " + lonfile);
+    			OutputStream outstr = dataSocket.getOutputStream();
+    			while ((n = sendfile.read(buff)) > 0) {
+    				outstr.write(buff, 0, n);
+    			}
+
+    			dataSocket.close();
+    			sendfile.close();
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			System.exit(1);
+    		}
+    	}
+    }
+    
+	// getMsgs方法
+	// 启动从控制流收信的线程
+	public void getMsgs() {
+		try {
+			CtrlListen listener = new CtrlListen(ctrlInput);
+			Thread listenerthread = new Thread(listener);
+			listenerthread.start();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+	}
+>>>>>>> 1074cf4d328425c38e243ac74e4b207dfec26356:src/cn/edu/whu/wzw/ftp/MyFtp.java
 
     // getMsgs方法
     // 启动从控制流收信的线程
@@ -278,7 +414,64 @@ public class Ftp_by_apache {
             return this.getType();
         }
 
+<<<<<<< HEAD:src/cn/edu/whu/wzw/ftp/Ftp_by_apache.java
         public boolean isFile() {
             return !this.getType();
         }
     }
+=======
+//读取控制流的CtrlListen 类
+class CtrlListen implements Runnable {
+	BufferedReader ctrlInput = null;
+
+	public CtrlListen(BufferedReader in) {
+		ctrlInput = in;
+	}
+
+	public void run() {
+		while (true) {
+			try {
+				// 按行读入并输出到标准输出上
+				System.out.println(ctrlInput.readLine());
+			} catch (Exception e) {
+				System.exit(1);
+			}
+		}
+	}
+}
+
+
+class MyFtpFile{
+	//目录true，文件false
+	private boolean type;
+	private String name;
+	private long size;
+	
+	public boolean getType() {
+		return type;
+	}
+	public void setType(boolean type) {
+		this.type = type;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public long getSize() {
+		return size;
+	}
+	public void setSize(long size) {
+		this.size = size;
+	}
+	
+	public boolean isDirectory() {
+		return this.getType();
+	}
+	
+	public boolean isFile() {
+		return !this.getType();
+	}
+}
+>>>>>>> 1074cf4d328425c38e243ac74e4b207dfec26356:src/cn/edu/whu/wzw/ftp/MyFtp.java

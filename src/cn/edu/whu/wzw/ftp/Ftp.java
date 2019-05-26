@@ -2,8 +2,6 @@ package cn.edu.whu.wzw.ftp;
 
 import java.net.*;
 import java.io.*;
-import java.util.*;
-
 /*
  * 基于filezilla的ftp服务器实现的ftp客户端
  */
@@ -390,3 +388,4 @@ class CtrlListen implements Runnable {
         }
     }
 }
+
